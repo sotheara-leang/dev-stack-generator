@@ -1,0 +1,29 @@
+app:
+  config-home: ${APP_HOME}/${spring.application.name}/config
+
+spring:
+  application:
+    name: dev_stack_generator
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/mybatis-generator
+#    username: root
+#    password: root
+#    platform: mysql
+
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/dev-stack-generator
+#    username: root
+#    password: root
+#    platform: postgresql
+    
+liquibase:
+  enabled: false
+  change-log: file:${app.config-home}/liquibase/db.changelog-master.xml
+  parameters:
+    liquibase-home: ${app.config-home}/liquibase
+    
+logging:
+  level:
+    org.mybatis: DEBUG
+    com.example.dev_stack_generator: DEBUG
+        

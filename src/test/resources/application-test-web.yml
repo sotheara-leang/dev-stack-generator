@@ -1,0 +1,31 @@
+app:
+  config-home: ${APP_HOME}/${spring.application.name}/config
+
+spring:
+  application:
+    name: com.example.springboot
+  thymeleaf:
+    prefix: file:${APP_HOME}/${spring.application.name}/views/
+    check-template: true
+  resources:
+    static-locations: file:${APP_HOME}/${spring.application.name}/resources/
+  mvc:
+    static-path-pattern: /resources/**
+  h2:
+    console:
+      enabled: true
+  http:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+ 
+liquibase:
+  change-log: file:${app.config-home}/liquibase/db.changelog-master.xml
+  parameters:
+    liquibase-home: ${app.config-home}/liquibase
+    
+logging:
+  level:
+    org.mybatis: DEBUG
+    com.example.dev_stack_generator: DEBUG
+        

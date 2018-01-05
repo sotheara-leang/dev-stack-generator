@@ -1,0 +1,21 @@
+app:
+  config-home: ${APP_HOME}/${spring.application.name}/config
+
+spring:
+  application:
+    name: dev_stack_generator
+  h2:
+    console:
+      enabled: true
+      
+server:
+  port: 9090
+    
+logging:
+  config: ${app.config-home}/logback.xml
+ 
+liquibase:
+  enabled: false
+  change-log: file:${app.config-home}/liquibase/db.changelog-master.xml
+  parameters:
+    liquibase-home: ${app.config-home}/liquibase
