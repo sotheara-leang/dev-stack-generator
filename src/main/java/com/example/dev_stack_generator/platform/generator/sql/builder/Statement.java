@@ -15,4 +15,8 @@ public class Statement {
 	public static UpdateBuilder update(String table) {
 		return UpdateBuilder.table( table );
 	}
+	
+	public static DeleteBuilder delete(String table) {
+		return DeleteBuilder.table( table );
+	}
 }

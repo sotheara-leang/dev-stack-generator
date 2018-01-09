@@ -29,7 +29,7 @@ public class SqlGeneratorTest {
 		String sql = Statement.insert("User")
 			.set(Parameter.builder()
 					.column("LAST_NAME")
-					.field( "lastName" )
+					.value( "lastName" )
 					.build(), "lastName != null")
 			.set(Parameter.builder()
 					.column("FIRST_NAME")
@@ -83,6 +83,7 @@ public class SqlGeneratorTest {
 		String sql = Statement.select( "LAST_NAME", "FIRST_NAME" )
 			.from( "User" )
 			.where( "LAST_NAME = 'Leang'" )
+			.orderBy( "LAST_NAME" )
 			.build();
 		
 		System.out.println( sql );

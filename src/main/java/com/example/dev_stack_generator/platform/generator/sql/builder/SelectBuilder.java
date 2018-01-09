@@ -11,14 +11,15 @@ import com.example.dev_stack_generator.platform.generator.sql.model.Parameter;
 
 public class SelectBuilder extends AbstractSqlBuilder {
 
-	private List<String> tables			= new ArrayList<>();
-	private List<String> columns 		= new ArrayList<>();
-	private List<String> conditions		= new ArrayList<>();
-	private List<Parameter> parameters 	= new ArrayList<>();
-	private List<String> where 			= new ArrayList<>();
-	private List<String> having 		= new ArrayList<String>();
-	private List<String> groupBy 		= new ArrayList<String>();
-	private List<String> orderBy		= new ArrayList<String>();
+	private List<String> tables					= new ArrayList<>();
+	private List<String> columns 				= new ArrayList<>();
+	private List<String> conditions				= new ArrayList<>();
+	private List<Parameter> parameters 			= new ArrayList<>();
+	private List<String> where 					= new ArrayList<>();
+	private List<String> whereConditions		= new ArrayList<>();
+	private List<String> having 				= new ArrayList<String>();
+	private List<String> groupBy 				= new ArrayList<String>();
+	private List<String> orderBy				= new ArrayList<String>();
 	
 	public SelectBuilder select(String column) {
 		return select(column, null);
@@ -52,13 +53,14 @@ public class SelectBuilder extends AbstractSqlBuilder {
 	
 	public SelectBuilder where(String condition) {
 		where.add(condition);
+		whereConditions.add( null );
 		return this;
 	}
 	
 	public SelectBuilder where(Parameter parameter, String condition) {
 		columns.add(parameter.getColumn());
 		parameters.add(parameter);
-		conditions.add(condition);
+		whereConditions.add(condition);
 		return this;
 	}
 	
@@ -91,7 +93,7 @@ public class SelectBuilder extends AbstractSqlBuilder {
 		StringBuilder builder = new StringBuilder();
 		sqlClause(builder, "SELECT", columns, "", "", ", ");
 		sqlClause(builder, "FROM", tables, "", "", ", ");
-		sqlClause(builder, "WHERE", where, "(", ")", " AND ");
+		sqlClause(builder, "WHERE", where, null, whereConditions, "(", ")", " AND ");
 		sqlClause(builder, "GROUP BY", groupBy, "", "", ", ");
 		sqlClause(builder, "HAVING", having, "(", ")", " AND ");
 		sqlClause(builder, "ORDER BY", orderBy, "", "", ", ");
