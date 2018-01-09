@@ -1,6 +1,9 @@
 package com.example.dev_stack_generator.platform.generator.pojo;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -13,9 +16,11 @@ import com.example.dev_stack_generator.platform.generator.pojo.model.Field;
 import com.example.dev_stack_generator.platform.generator.pojo.model.Pojo;
 import com.example.dev_stack_generator.platform.generator.pojo.util.Utils;
 import com.example.dev_stack_generator.platform.generator.util.TypeUtils;
+import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.MethodSpec.Builder;
 import com.squareup.javapoet.TypeSpec;
 
 public class PojoGenerator {
@@ -70,6 +75,28 @@ public class PojoGenerator {
 				typeSpecBuilder.addMethod(setterMethodSpec);
 			}
 		}
+		
+		boolean isAbstractPojo = false;
+		for (Modifier modifier : classModifierList) {
+			if (modifier == Modifier.ABSTRACT) {
+				isAbstractPojo = true;
+				break;
+			}
+		}
+		
+		// Super class
+		Class<?> superClass = pojo.getSuperClass();
+		if (superClass != null) {
+			initSuperClassSpec( typeSpecBuilder, superClass, isAbstractPojo);
+		}
+		
+		// Interface classes
+		List<Class<?>> interfaceClassList = pojo.getInterfaceClassList();
+		if (interfaceClassList != null) {
+			for (Class<?> interfaceClass : interfaceClassList) {
+				initInterfaceSpec(typeSpecBuilder, interfaceClass, isAbstractPojo);
+			}
+		}
 				
 		// Generate equals
 		MethodSpec equalsSpec = generateEqualsSpec();
@@ -83,8 +110,7 @@ public class PojoGenerator {
 		MethodSpec toStringMethodSpec = generateToStringSpec(pojo);
 		typeSpecBuilder.addMethod(toStringMethodSpec);
 		
-		boolean hasBuilder = pojo.isHasBuilder();
-		if (hasBuilder) {
+		if (!isAbstractPojo && pojo.isHasBuilder()) {
 			// Generate builder method
 			MethodSpec builderMethodSpec = classBuilderGenerator.generateBuilderMethodSpec();
 			typeSpecBuilder.addMethod(builderMethodSpec);
@@ -130,5 +156,88 @@ public class PojoGenerator {
 				.returns(String.class)
 				.addCode("return \"" + toStringStmt + "\";\n")
 				.build();
+	}
+	
+	protected void initSuperClassSpec(com.squareup.javapoet.TypeSpec.Builder typeSpecBuilder, Class<?> superClass, boolean isAbstractPojo) {
+		int interfaceModifiers = superClass.getModifiers();
+		if (!java.lang.reflect.Modifier.isInterface(interfaceModifiers)) {
+			return;
+		}
+		
+		typeSpecBuilder.superclass( superClass );
+		
+		if (!isAbstractPojo) {
+			Method[] methods = superClass.getMethods();
+			if (methods != null) {
+				for (int i = 0 ; i < methods.length; i++) {
+					Method method = methods[i];
+					MethodSpec methodSpec = toBasicAbstractMethodSpec( method );
+					typeSpecBuilder.addMethod( methodSpec );
+				}
+			}
+		}
+	}
+	
+	protected void initInterfaceSpec(com.squareup.javapoet.TypeSpec.Builder typeSpecBuilder, Class<?> interfaceClass, boolean isAbstractPojo) {
+		int interfaceModifiers = interfaceClass.getModifiers();
+		if (!java.lang.reflect.Modifier.isInterface(interfaceModifiers)) {
+			return;
+		}
+		
+		if (Serializable.class.isAssignableFrom( interfaceClass )) {
+			typeSpecBuilder.addSuperinterface( interfaceClass );
+			typeSpecBuilder.addField( fieldGenerator.generateSerialVersionUID() );
+			
+		} else {
+			typeSpecBuilder.addSuperinterface( interfaceClass );
+			
+			if (!isAbstractPojo) {
+				Method[] methods = interfaceClass.getMethods();
+				if (methods != null) {
+					for (int i = 0 ; i < methods.length; i++) {
+						Method method = methods[i];
+						MethodSpec methodSpec = toBasicAbstractMethodSpec( method );
+						typeSpecBuilder.addMethod( methodSpec );
+					}
+				}
+			}
+		}
+	}
+	
+	protected MethodSpec toBasicAbstractMethodSpec(Method method) {
+		Assert.notNull(method, "method must be not null");
+		
+		Builder methodBuilder = MethodSpec.methodBuilder( method.getName() )
+				.addAnnotation( Override.class );
+
+		// method return type		
+		Class<?> returnType = method.getReturnType();
+		methodBuilder.returns( returnType );
+		
+		// method modifier
+		int methodModifiers = method.getModifiers();
+		if (java.lang.reflect.Modifier.isPublic( methodModifiers )) {
+			methodBuilder.addModifiers( javax.lang.model.element.Modifier.PUBLIC );
+		}
+		
+		// method parameters
+		Parameter[] parameters = method.getParameters();
+		if (parameters != null && parameters.length > 0) {
+			for (Parameter parameter : parameters) {
+				String paramName = parameter.getName();
+				Class<?> paramType = parameter.getType();
+				methodBuilder.addParameter( paramType, paramName);
+			}
+		}
+		
+		// prepare basic implementation code block
+		if (!void.class.isAssignableFrom( returnType )) {
+			com.squareup.javapoet.CodeBlock.Builder codeBlock = CodeBlock.builder();
+			codeBlock.addStatement( "return $L", Utils.getDefaultValue( returnType ) );
+			
+			methodBuilder.addCode( codeBlock.build() );
+		}
+		
+		return methodBuilder.build();
 	}
 }

@@ -1,12 +1,17 @@
 package com.example.dev_stack_generator.generator;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
+
+import javax.lang.model.element.Modifier;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.example.dev_stack_generator.AbstractServiceTest;
+import com.example.dev_stack_generator.common.SampleInterface;
 import com.example.dev_stack_generator.platform.generator.pojo.PojoGenerator;
 import com.example.dev_stack_generator.platform.generator.pojo.constraint.LengthConstraint;
 import com.example.dev_stack_generator.platform.generator.pojo.constraint.NotEmptyConstraint;
@@ -28,6 +33,8 @@ public class PojoGeneratorTest extends AbstractServiceTest {
 		pojo.setHasBuilder(true);
 		pojo.setClassName("UserDto");
 		pojo.setClassPackage("com.example.dev_stack_generator.dto");
+		pojo.setClassModifierList( Arrays.asList( Modifier.PUBLIC ) );
+		pojo.setInterfaceClassList( Arrays.asList( Serializable.class, SampleInterface.class ));
 		
 		Field field1 = new Field();
 		field1.setName("lastName");

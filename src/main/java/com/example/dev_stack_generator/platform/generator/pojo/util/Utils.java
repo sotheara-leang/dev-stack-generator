@@ -1,5 +1,8 @@
 package com.example.dev_stack_generator.platform.generator.pojo.util;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.util.List;
 
 import org.springframework.util.Assert;
@@ -8,6 +11,8 @@ import com.example.dev_stack_generator.platform.generator.pojo.model.BuilderFiel
 import com.example.dev_stack_generator.platform.generator.pojo.model.ClassBuilder;
 import com.example.dev_stack_generator.platform.generator.pojo.model.Field;
 import com.example.dev_stack_generator.platform.generator.pojo.model.Pojo;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.MethodSpec.Builder;
 
 public class Utils {
 	
@@ -86,5 +91,48 @@ public class Utils {
 		}
 		
 		return innerClassBuilder;
+	}
+	
+	public static MethodSpec toMethodSpec(Method method) {
+		Assert.notNull(method, "method must not be null");
+		
+		String name = method.getName();
+		Builder methodBuilder = MethodSpec.methodBuilder( name );
+		
+		int modifiers = method.getModifiers();
+		if (modifiers == Modifier.PUBLIC) {
+			methodBuilder.addModifiers( javax.lang.model.element.Modifier.PUBLIC );
+		} else if (modifiers == Modifier.PROTECTED) {
+			methodBuilder.addModifiers( javax.lang.model.element.Modifier.PROTECTED );
+		}
+		
+		Class<?> returnType = method.getReturnType();
+		methodBuilder.returns( returnType);
+				
+		Parameter[] parameters = method.getParameters();
+		if (parameters != null && parameters.length > 0) {
+			for (Parameter parameter : parameters) {
+				String paramName = parameter.getName();
+				Class<?> paramType = parameter.getType();
+				methodBuilder.addParameter( paramType, paramName);
+			}
+		}
+		
+		return methodBuilder.build();
+	}
+	
+	public static Object getDefaultValue( Class<?> clazz ) {
+		if ( clazz.equals( boolean.class ) ) {
+			return false;
+		} else if ( clazz.equals( byte.class ) 
+				|| clazz.equals( short.class )
+				|| clazz.equals( int.class )
+				|| clazz.equals( long.class )
+				|| clazz.equals( float.class )
+				|| clazz.equals( double.class )) {
+			return 0;
+		} else {
+			return null;
+		}
 	}
 }

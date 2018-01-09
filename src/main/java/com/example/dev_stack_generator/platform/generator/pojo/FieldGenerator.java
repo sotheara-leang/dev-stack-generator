@@ -20,6 +20,7 @@ import com.example.dev_stack_generator.platform.generator.util.ClassUtils;
 import com.example.dev_stack_generator.platform.generator.util.TypeUtils;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.FieldSpec.Builder;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 
@@ -116,5 +117,18 @@ public class FieldGenerator {
 		generatorList.add(new LengthConstraintGenerator());
 
 		return generatorList;
+	}
+	
+	protected FieldSpec generateSerialVersionUID() {
+		Builder fieldSpecBuilder = FieldSpec.builder(long.class, 
+				"serialVersionUID", 
+				Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL);
+		
+		long randomRang = 1000000000000000L;
+		double randomValue = Math.ceil( (Math.random() * randomRang));
+		
+		fieldSpecBuilder.initializer( "$LL", (long ) randomValue );
+		
+		return fieldSpecBuilder.build();
 	}
 }
