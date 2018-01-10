@@ -36,9 +36,7 @@ dependencies {
 
 	compile('org.liquibase:liquibase-core')
 	
-	compile('org.apache.commons:commons-lang3:3.7')
-	
-	compile('org.apache.commons:commons-text:1.2')
+	compile('commons-lang:commons-lang:2.6')
 	
 	compile('com.squareup:javapoet:1.9.0')
 	
