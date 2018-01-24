@@ -9,9 +9,11 @@ import org.springframework.util.Assert;
 import com.example.dev_stack_generator.platform.generator.pojo.model.BuilderField;
 import com.example.dev_stack_generator.platform.generator.pojo.util.Utils;
 import com.example.dev_stack_generator.platform.generator.pojo.model.ClassBuilder;
+import com.example.dev_stack_generator.platform.generator.pojo.model.FieldInitializer;
 import com.example.dev_stack_generator.platform.generator.util.TypeUtils;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.FieldSpec.Builder;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
@@ -48,8 +50,14 @@ public class ClassBuilderGenerator {
 				TypeName typeName = TypeUtils.getTypeName(field.getType(), field.getSubTypeList());
 				
 				// Generate field
-				FieldSpec fieldSpec = FieldSpec.builder(typeName, field.getName(), Modifier.PRIVATE).build();
-				typeSpecBuilder.addField(fieldSpec);
+				Builder fieldSpecBuilder = FieldSpec.builder(typeName, field.getName(), Modifier.PRIVATE);
+				
+				FieldInitializer fieldInitializer = field.getFieldInitializer();
+				if (fieldInitializer != null) {
+					fieldSpecBuilder.initializer(fieldInitializer.getFormat(), fieldInitializer.getArguments());
+				}
+				
+				typeSpecBuilder.addField(fieldSpecBuilder.build());
 				
 				// Generate setter
 				com.squareup.javapoet.MethodSpec.Builder setterSpecBuilder = MethodSpec.methodBuilder(fieldName)

@@ -85,6 +85,7 @@ public class Utils {
 				builderField.setName(field.getName());
 				builderField.setType(field.getType());
 				builderField.setSubTypeList(field.getSubTypeList());
+				builderField.setFieldInitializer( field.getFieldInitializer() );
 				
 				builderFieldList.add(builderField);
 			}

@@ -8,6 +8,7 @@ public class BuilderField {
 	private String name;
 	private Class<?> type;
 	private List<Class<?>> subTypeList = new ArrayList<>();
+	private FieldInitializer fieldInitializer;
 
 	public BuilderField() {}
 	
@@ -15,6 +16,7 @@ public class BuilderField {
 		this.name = builder.name;
 		this.type = builder.type;
 		this.subTypeList = builder.subTypeList;
+		this.fieldInitializer = builder.fieldInitializer;
 	}
 
 	public String getName() {
@@ -41,11 +43,20 @@ public class BuilderField {
 		this.subTypeList = subTypeList;
 	}
 
-	@Override
-	public String toString() {
-		return "BuilderField [name=" + name + ", type=" + type + ", subTypeList=" + subTypeList + "]";
+	public FieldInitializer getFieldInitializer() {
+		return fieldInitializer;
+	}
+
+	public void setFieldInitializer( FieldInitializer fieldInitializer ) {
+		this.fieldInitializer = fieldInitializer;
 	}
 	
+	@Override
+	public String toString() {
+		return "BuilderField [name=" + name + ", type=" + type + ", subTypeList=" + subTypeList + ", fieldInitializer="
+				+ fieldInitializer + "]";
+	}
+
 	public static Builder builder() {
 		return new Builder();
 	}
@@ -55,6 +66,7 @@ public class BuilderField {
 		private String name;
 		private Class<?> type;
 		private List<Class<?>> subTypeList = new ArrayList<>();
+		private FieldInitializer fieldInitializer;
 		
 		public Builder name(String name) {
 			this.name = name;
@@ -80,6 +92,11 @@ public class BuilderField {
 					this.subTypeList.add(subType);
 				}
 			}
+			return this;
+		}
+		
+		public Builder fieldInitializer( FieldInitializer fieldInitializer ) {
+			this.fieldInitializer = fieldInitializer;
 			return this;
 		}
 
