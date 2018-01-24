@@ -99,16 +99,22 @@ public class PojoGenerator {
 		}
 				
 		// Generate equals
-		MethodSpec equalsSpec = generateEqualsSpec();
-		typeSpecBuilder.addMethod(equalsSpec);
+		if (pojo.isHasEquals()) {
+			MethodSpec equalsSpec = generateEqualsSpec();
+			typeSpecBuilder.addMethod(equalsSpec);
+		}
 		
 		// Generate hash code
-		MethodSpec hashCodeSpec = generateHashCodeSpec();
-		typeSpecBuilder.addMethod(hashCodeSpec);
+		if (pojo.isHasHashCode()) {
+			MethodSpec hashCodeSpec = generateHashCodeSpec();
+			typeSpecBuilder.addMethod(hashCodeSpec);
+		}
 		
 		// Generate toString
-		MethodSpec toStringMethodSpec = generateToStringSpec(pojo);
-		typeSpecBuilder.addMethod(toStringMethodSpec);
+		if (pojo.isHasToString()) {
+			MethodSpec toStringMethodSpec = generateToStringSpec(pojo);
+			typeSpecBuilder.addMethod(toStringMethodSpec);
+		}
 		
 		if (!isAbstractPojo && pojo.isHasBuilder()) {
 			// Generate builder method

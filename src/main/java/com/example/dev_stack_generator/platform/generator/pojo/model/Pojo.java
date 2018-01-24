@@ -14,7 +14,10 @@ public class Pojo {
 	private Class<?> superClass;
 	private List<Class<?>> interfaceClassList = new ArrayList<>();
 	private List<Field> fieldList = new ArrayList<Field>();
+	private boolean hasToString;
+	private boolean hasHashCode;
 	private boolean hasBuilder;
+	private boolean hasEquals;
 
 	public Pojo() {}
 	
@@ -27,6 +30,9 @@ public class Pojo {
 	    this.interfaceClassList = builder.interfaceClassList;
 	    this.fieldList = builder.fieldList;
 	    this.hasBuilder = builder.hasBuilder;
+	    this.hasToString = builder.hasToString;
+	    this.hasHashCode = builder.hasHashCode;
+	    this.hasEquals = builder.hasEquals;
 	}
 	
 	public String getSourceFolder() {
@@ -93,11 +99,36 @@ public class Pojo {
 		this.hasBuilder = hasBuilder;
 	}
 
+	public boolean isHasToString() {
+		return hasToString;
+	}
+
+	public void setHasToString( boolean hasToString ) {
+		this.hasToString = hasToString;
+	}
+
+	public boolean isHasHashCode() {
+		return hasHashCode;
+	}
+
+	public void setHasHashCode( boolean hasHashcode ) {
+		this.hasHashCode = hasHashcode;
+	}
+	
+	public boolean isHasEquals() {
+		return hasEquals;
+	}
+
+	public void setHasEquals( boolean hasEquals ) {
+		this.hasEquals = hasEquals;
+	}
+
 	@Override
 	public String toString() {
 		return "Pojo [sourceFolder=" + sourceFolder + ", classPackage=" + classPackage + ", className=" + className
 				+ ", classModifierList=" + classModifierList + ", superClass=" + superClass + ", interfaceClassList="
-				+ interfaceClassList + ", fieldList=" + fieldList + ", hasBuilder=" + hasBuilder + "]";
+				+ interfaceClassList + ", fieldList=" + fieldList + ", hasToString=" + hasToString + ", hasHashCode="
+				+ hasHashCode + ", hasBuilder=" + hasBuilder + "]";
 	}
 
 	public static Builder builder () {
@@ -113,7 +144,10 @@ public class Pojo {
 		private Class<?> superClass;
 		private List<Class<?>> interfaceClassList = new ArrayList<>();
 		private List<Field> fieldList = new ArrayList<Field>();
+		private boolean hasToString;
+		private boolean hasHashCode;
 		private boolean hasBuilder;
+		private boolean hasEquals;
 
 		public Builder sourceFolder(String sourceFolder) {
 			this.sourceFolder = sourceFolder;
@@ -176,6 +210,21 @@ public class Pojo {
 		
 		public Builder hasBuilder(boolean hasBuilder) {
 			this.hasBuilder = hasBuilder;
+			return this;
+		}
+		
+		public Builder hasToString( boolean hasToString ) {
+			this.hasToString = hasToString;
+			return this;
+		}
+
+		public Builder hasHashCode( boolean hasHashCode ) {
+			this.hasHashCode = hasHashCode;
+			return this;
+		}
+		
+		public Builder hasEquals( boolean hasEquals ) {
+			this.hasEquals = hasEquals;
 			return this;
 		}
 
